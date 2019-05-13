@@ -1,0 +1,52 @@
+.taggd__button {
+	display: block;
+	height: 1rem;
+	width: 1rem;
+	margin-left: -.5rem;
+	margin-top: -.5rem;
+	border-radius: .5rem;
+	background-color: rgba(219, 50, 92, 0.75);
+
+	&:hover {
+		background-color: rgb(219, 50, 92);
+		z-index: 10;
+	}
+}
+
+
+.taggd__popup {
+	display: block;
+	padding: .75rem;
+	position: absolute;
+	left: 50%;
+	top: 125%;
+	color: #fff;
+	text-align: center;
+	white-space: nowrap;
+	background-color: rgba(219, 50, 92, 0.75);
+	transform: translateX(-50%);
+}
+
+%taggd__editor-base {
+	margin-right: .25rem;
+	color: #fff;
+	background-color: transparent;
+}
+.taggd__editor-input,
+	@extend %taggd__editor-base;
+	border: 1px solid #fff;
+	padding: .25rem .5rem;
+}
+
+.taggd__editor-button {
+	@extend %taggd__editor-base;
+
+	&:hover {
+		background-color: #fff;
+		color: transparent;
+	}
+}
+
+.taggd__editor-button--delete {
+	margin-right: 0;
+}
