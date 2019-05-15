@@ -2,3 +2,22 @@
   margin: 0 auto;
   max-width: 1024px;
 }
+
+.container-fluid {
+	display: flex;
+	height: 100%;
+}
+
+.part-image {
+	flex: 0 1 auto;
+}
+
+.part-panel {
+	flex: 0 0 auto;
+	border: 3px solid red;
+	border-radius: 1rem;
+}
+
+.part-panel.canSave {
+	border-color: green;
+}

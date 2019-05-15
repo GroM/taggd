@@ -1,48 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Taggd</title>
+	<meta charset="UTF-8">
+	<title>Taggd</title>
 
-  <link rel="stylesheet" href="assets/layout.css">
-  <link rel="stylesheet" href="../../dist/taggd.css">
-  <link rel="stylesheet" href="themes/taggd-classic.css">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-  <style>html, body { height: 125%; }</style>
+	<link rel="stylesheet" href="assets/layout.css">
+	<link rel="stylesheet" href="../../dist/taggd.css">
+	<link rel="stylesheet" href="themes/taggd-fa.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+	<style>
+		html, body { height: 125%; }
+	</style>
 </head>
 <body>
 
-  <main class="container">
-    <img src="../assets/aw-1.jpg" alt="" id="image">
+	<main class="container-fluid">
+		<div class="part-image">
+			<img src="../assets/aw-1.jpg" alt="" id="image">
+		</div>
+		<div class="part-panel">
+			<button id="btn-generate-output">Get tags</button>
+			<button id="btn-load">Wczytaj</button>
+			<button id="btn-save">Zapisz</button>
+			<button id="btn-import">Importuj</button>
+			<pre id="output"></pre>
+		</div>
+	</main>
 
-    <button id="btn-generate-output">Get tags</button>
-    <pre id="output"></pre>
-  </main>
+	<script src="../../dist/taggd.js"></script>
+	<script src="../functions.js"></script>
+	<script>
+		var image = document.getElementById('image');
+		Taggd.Tag.LABEL_BUTTON_SAVE = '<i class="fas fa-2x fa-plus-square"></i>';
+		Taggd.Tag.LABEL_BUTTON_DELETE = '<i class="fas fa-2x fa-minus-square"></i>';
+		var taggd = new Taggd(image);
+		var canSave = storageAvailable('localStorage');
+		alert('Save=' + canSave);
+		taggd.setTags([
+			createTag(),
+			createTag(),
+			createTag(),
+		]);
 
-  <script src="../../dist/taggd.js"></script>
-  <script src="../functions.js"></script>
-  <script>
-    var image = document.getElementById('image');
-    Taggd.Tag.LABEL_BUTTON_SAVE = '<i class="fas fa-2x fa-plus-square"></i>';
-    Taggd.Tag.LABEL_BUTTON_DELETE = '<i class="fas fa-2x fa-minus-square"></i>';
-    var taggd = new Taggd(image);
-    var canSave = storageAvailable('localStorage');
-    
-    taggd.setTags([
-      createTag(),
-      createTag(),
-      createTag(),
-    ]);
+		taggd.enableEditorMode();
 
-    taggd.enableEditorMode();
+		var btnGenerateOutput = document.getElementById('btn-generate-output');
+		var output = document.getElementById('output');
 
-    var btnGenerateOutput = document.getElementById('btn-generate-output');
-    var output = document.getElementById('output');
-
-    btnGenerateOutput.addEventListener('click', function () {
-      output.innerHTML = JSON.stringify(taggd.getTags(), null, 2);
-    });
-  </script>
+		btnGenerateOutput.addEventListener('click', function () {
+			output.innerHTML = JSON.stringify(taggd.getTags(), null, 2);
+		});
+	</script>
 
 </body>
 </html>
