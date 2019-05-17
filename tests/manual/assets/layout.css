@@ -10,14 +10,25 @@
 
 .part-image {
 	flex: 0 1 auto;
+	margin-right: 1rem;
 }
 
 .part-panel {
 	flex: 0 0 auto;
 	border: 3px solid red;
 	border-radius: 1rem;
+	padding: 1rem;
 }
 
 .part-panel.canSave {
 	border-color: green;
+}
+.commands {
+	margin-bottom: 2rem;
+}
+
+.part-panel textarea {
+	display: block;
+	width: 100%;
+	min-height: 50vh;
 }

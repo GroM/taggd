@@ -18,11 +18,14 @@
 		<div class="part-image">
 			<img src="../assets/aw-1.jpg" alt="" id="image">
 		</div>
-		<div class="part-panel">
-			<button id="btn-generate-output">Get tags</button>
-			<button id="btn-load">Wczytaj</button>
-			<button id="btn-save">Zapisz</button>
-			<button id="btn-import">Importuj</button>
+		<div id="panel" class="part-panel">
+			<div class="commands">
+				<button id="btn-generate-output">Get tags</button>
+				<button id="btn-load">Wczytaj</button>
+				<button id="btn-save">Zapisz</button>
+				<button id="btn-import">Importuj</button>
+			</div>
+			<textarea id="data"></textarea>
 			<pre id="output"></pre>
 		</div>
 	</main>
@@ -35,7 +38,10 @@
 		Taggd.Tag.LABEL_BUTTON_DELETE = '<i class="fas fa-2x fa-minus-square"></i>';
 		var taggd = new Taggd(image);
 		var canSave = storageAvailable('localStorage');
-		alert('Save=' + canSave);
+		if(canSave)
+		{
+			document.getElementById('panel').classList.add('canSave');
+		}
 		taggd.setTags([
 			createTag(),
 			createTag(),
