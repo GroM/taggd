@@ -10,7 +10,7 @@ const gulp = require('gulp');
 const $ = require('gulp-load-plugins')({
   rename: {
     'gulp-uglify': 'minifyJs',
-    'gulp-cssnano': 'minifyCss',
+    'gulp-postcss': 'minifyCss',
   },
 });
 
@@ -18,8 +18,8 @@ const DIR_BUILD = 'dist';
 const DIR_SOURCE = 'src';
 
 const OPTIONS_BABEL = {
-  presets: ['es2015', 'es2017'],
-  plugins: ['transform-runtime'],
+  presets: ['@babel/preset-env'],
+  plugins: ['@babel/transform-runtime'],
 };
 const OPTIONS_BROWSERIFY = {
   standalone: 'Taggd',

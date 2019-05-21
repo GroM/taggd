@@ -1,8 +1,14 @@
 {
-  "extends": "airbnb",
-  "env": {
-    "jasmine": true,
-    "browser": true,
-    "jquery": true
-  }
+	"extends": "airbnb",
+	"env": {
+		"jasmine": true,
+		"browser": true,
+		"jquery": true
+	},
+	"rules": {
+		"indent": ["error", "tab"],
+		"brace-style": ["error", "allman"],
+		"no-tabs": ["error", {"allowIndentationTabs": true}],
+		"arrow-parens": ["error", "always"]
+	}
 }
