@@ -255,35 +255,46 @@ class Tag extends EventEmitter
 	 * Enables the tag controls
 	 * @return {Taggd.Tag} Current tag
 	 */
-	enableControls()
+	enableControls(enable)
 	{
-		this.isControlsEnabled = true;
+		if(enable === undefined)
+		{
+			enable = true;
+		}
+		this.isControlsEnabled = enable;
+		if(enable)
+		{
+			this.inputLabelElement = document.createElement('input');
+			this.buttonSaveElement = document.createElement('button');
+			this.buttonDeleteElement = document.createElement('button');
 
-		this.inputLabelElement = document.createElement('input');
-		this.buttonSaveElement = document.createElement('button');
-		this.buttonDeleteElement = document.createElement('button');
+			this.inputLabelElement.classList.add('taggd__editor-input');
+			this.buttonSaveElement.classList.add(
+				'taggd__editor-button',
+				'taggd__editor-button--save',
+			);
+			this.buttonDeleteElement.classList.add(
+				'taggd__editor-button',
+				'taggd__editor-button--delete',
+			);
 
-		this.inputLabelElement.classList.add('taggd__editor-input');
-		this.buttonSaveElement.classList.add(
-			'taggd__editor-button',
-			'taggd__editor-button--save',
-		);
-		this.buttonDeleteElement.classList.add(
-			'taggd__editor-button',
-			'taggd__editor-button--delete',
-		);
+			this.buttonSaveElement.innerHTML = Tag.LABEL_BUTTON_SAVE;
+			this.buttonDeleteElement.innerHTML = Tag.LABEL_BUTTON_DELETE;
 
-		this.buttonSaveElement.innerHTML = Tag.LABEL_BUTTON_SAVE;
-		this.buttonDeleteElement.innerHTML = Tag.LABEL_BUTTON_DELETE;
+			this.buttonSaveElement.addEventListener('click', this.buttonSaveElementClickHandler);
+			this.buttonDeleteElement.addEventListener('click', this.buttonDeleteElementClickHandler);
 
-		this.buttonSaveElement.addEventListener('click', this.buttonSaveElementClickHandler);
-		this.buttonDeleteElement.addEventListener('click', this.buttonDeleteElementClickHandler);
-
-		this.popupElement.innerHTML = '';
-		this.popupElement.appendChild(this.inputLabelElement);
-		this.popupElement.appendChild(this.buttonSaveElement);
-		this.popupElement.appendChild(this.buttonDeleteElement);
-
+			this.popupElement.innerHTML = '';
+			this.popupElement.appendChild(this.inputLabelElement);
+			this.popupElement.appendChild(this.buttonSaveElement);
+			this.popupElement.appendChild(this.buttonDeleteElement);
+		}
+		else
+		{
+			this.inputLabelElement = undefined;
+			this.buttonSaveElement = undefined;
+			this.buttonDeleteElement = undefined;
+		}
 		// Set input content
 		this.setText(this.text);
 		return this;
@@ -295,15 +306,7 @@ class Tag extends EventEmitter
 	 */
 	disableControls()
 	{
-		this.isControlsEnabled = false;
-
-		this.inputLabelElement = undefined;
-		this.buttonSaveElement = undefined;
-		this.buttonDeleteElement = undefined;
-
-		// Remove elements and set set content
-		this.setText(this.text);
-		return this;
+		return enableControls(false);
 	}
 
 	/**

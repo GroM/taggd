@@ -20,10 +20,12 @@
 		</div>
 		<div id="panel" class="part-panel">
 			<div class="commands">
+				<button id="btn-default">Domyślne</button>
 				<button id="btn-generate-output">Get tags</button>
 				<button id="btn-load">Wczytaj</button>
 				<button id="btn-save">Zapisz</button>
 				<button id="btn-import">Importuj</button>
+				<label><input type="checkbox" id="btn-editor" /> Edytor</label>
 			</div>
 			<textarea id="data"></textarea>
 			<pre id="output"></pre>
@@ -42,52 +44,59 @@
 		{
 			document.getElementById('panel').classList.add('canSave');
 		}
-		taggd.importTags([
-			{
-				"position": {
-				  "x": 0.5479849999999999,
-				  "y": 0.265137
-				},
-				"text": "Kurtka",
-			},
-			{
-				"position": {
-				  "x": 0.605128,
-				  "y": 0.49072299999999996
-				},
-				"text": "Jeansy",
-			},
-			{
-				"position": {
-				  "x": 0.298168,
-				  "y": 0.503418
-				},
-				"text": "Torebka",
-			},
-			{
-				"position": {
-				  "x": 0.659341,
-				  "y": 0.47168
-				},
-				"text": "Zegarek",
-			},
-			{
-				"position": {
-				  "x": 0.44981699999999997,
-				  "y": 0.9189449999999999
-				},
-				"text": "Szpilki",
-			}
-		]);
 
-		taggd.enableEditorMode();
+
 
 		var btnGenerateOutput = document.getElementById('btn-generate-output');
 		var output = document.getElementById('output');
-
+		var btnEditor = document.getElementById('btn-editor');
+		var btnDefault = document.getElementById('btn-default');
+		btnEditor.addEventListener('change', function(){
+			taggd.enableEditorMode(btnEditor.checked);
+		});
 		btnGenerateOutput.addEventListener('click', function () {
 			output.innerHTML = JSON.stringify(taggd.getTags(), null, 2);
 		});
+		btnDefault.addEventListener('click', function(){
+			taggd.importTags([
+				{
+					"position": {
+						"x": 0.5479849999999999,
+						"y": 0.265137
+					},
+					"text": "Kurtka",
+				},
+				{
+					"position": {
+						"x": 0.605128,
+						"y": 0.49072299999999996
+					},
+					"text": "Jeansy",
+				},
+				{
+					"position": {
+						"x": 0.298168,
+						"y": 0.503418
+					},
+					"text": "Torebka",
+				},
+				{
+					"position": {
+						"x": 0.659341,
+						"y": 0.47168
+					},
+					"text": "Zegarek",
+				},
+				{
+					"position": {
+						"x": 0.44981699999999997,
+						"y": 0.9189449999999999
+					},
+					"text": "Szpilki",
+				}
+			], true);
+		});
+
 	</script>
 
 </body>

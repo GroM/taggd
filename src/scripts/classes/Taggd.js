@@ -275,11 +275,15 @@ class Taggd extends EventEmitter
 		return this;
 	}
 
-	importTags(tagsData)
+	importTags(tagsData, replace)
 	{
 		if (!Array.isArray(tagsData))
 		{
 			throw new TypeError(TypeErrorMessage.getArrayMessage(tagsData, 'object'));
+		}
+		if(replace === true)
+		{
+			this.deleteTags();
 		}
 		tagsData.forEach((tag) => this.addTag(Taggd.Tag.createFromObject(tag)));
 		return this;
@@ -359,14 +363,25 @@ class Taggd extends EventEmitter
 	 * Enable editor mode
 	 * @return {Taggd} Current Taggd instance
 	 */
-	enableEditorMode()
+	enableEditorMode(enable)
 	{
-		const isCanceled = !this.emit('taggd.editor.enable', this);
+		if(enable === undefined)
+		{
+			enable = true;
+		}
+		var evName = 'taggd.editor.enable';
+		var evAction = this.image.addEventListener;
+		if(!enable)
+		{
+			evName = 'taggd.editor.disable';
+			evAction = this.image.removeEventListener;
+		}
+		const isCanceled = !this.emit(evNamed, this);
 
 		if (!isCanceled)
 		{
 			this.image.addEventListener('click', this.imageClickHandler);
-			this.getTags().forEach((tag) => tag.enableControls());
+			this.getTags().forEach((tag) => tag.enableControls(enable));
 		}
 
 		return this;
@@ -378,6 +393,8 @@ class Taggd extends EventEmitter
 	 */
 	disableEditorMode()
 	{
+		return enableEditorMode(false);
+		/*
 		const isCanceled = !this.emit('taggd.editor.disable', this);
 
 		if (!isCanceled)
@@ -387,6 +404,7 @@ class Taggd extends EventEmitter
 		}
 
 		return this;
+		*/
 	}
 }
 
