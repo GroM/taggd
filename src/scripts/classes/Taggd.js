@@ -16,7 +16,7 @@ class Taggd extends EventEmitter
 	 */
 	constructor(image, options = {}, data = [])
 	{
-		if (!(image instanceof Element))
+		if(!(image instanceof Element))
 		{
 			throw new TypeError(TypeErrorMessage.getMessage(image, Element));
 		}
@@ -96,7 +96,7 @@ class Taggd extends EventEmitter
 	 */
 	setOptions(options)
 	{
-		if (!ObjectIs.ofType(options, 'object') || Array.isArray(options))
+		if(!ObjectIs.ofType(options, 'object') || Array.isArray(options))
 		{
 			throw new TypeError(TypeErrorMessage.getObjectMessage(options));
 		}
@@ -112,7 +112,7 @@ class Taggd extends EventEmitter
 	 */
 	addTag(tag)
 	{
-		if (!ObjectIs.ofInstance(tag, Tag))
+		if(!ObjectIs.ofInstance(tag, Tag))
 		{
 			throw new TypeError(TypeErrorMessage.getTagMessage(tag));
 		}
@@ -128,26 +128,28 @@ class Taggd extends EventEmitter
 		const isTargetButton = (e) => e.target === tag.buttonElement;
 		const clearTimeout = () =>
 		{
-			if (hideTimeout)
+			if(hideTimeout)
 			{
 				window.clearTimeout(hideTimeout);
 				hideTimeout = undefined;
 			}
 		};
 
-		if (!isCanceled)
+		if(!isCanceled)
 		{
 			// Add events to show/hide tags
 			// If show and hide event are identical, set show/hide mode to toggle
-			if (this.options.show === this.options.hide)
+			if(this.options.show === this.options.hide)
 			{
 				tag.buttonElement.addEventListener(this.options.show, (e) =>
 				{
-					if (!isTargetButton(e)) return;
+					if(!isTargetButton(e)) return;
 
 					clearTimeout();
 
-					if (tag.isHidden())
+					tag.show(tag.IsHidden());
+					/*
+					if(tag.isHidden())
 					{
 						tag.show();
 					}
@@ -155,26 +157,27 @@ class Taggd extends EventEmitter
 					{
 						tag.hide();
 					}
+					*/
 				});
 			}
 			else
 			{
 				tag.buttonElement.addEventListener(this.options.show, (e) =>
 				{
-					if (!isTargetButton(e)) return;
+					if(!isTargetButton(e)) return;
 
 					clearTimeout();
 					tag.show();
 				});
 				tag.buttonElement.addEventListener(this.options.hide, (e) =>
 				{
-					if (!isTargetButton(e)) return;
+					if(!isTargetButton(e)) return;
 
 					clearTimeout();
 
 					// If the use moves the mouse between the button and popup, a delay should give some time
 					// to do just that. This only applies to the mouseleave event.
-					if (this.options.hide === 'mouseleave')
+					if(this.options.hide === 'mouseleave')
 					{
 						hideTimeout = window.setTimeout(() => tag.hide(), this.options.hideDelay);
 					}
@@ -185,7 +188,7 @@ class Taggd extends EventEmitter
 				});
 
 				// Force visibility if user interacts with the popup element
-				if (this.options.hide === 'mouseleave')
+				if(this.options.hide === 'mouseleave')
 				{
 					tag.popupElement.addEventListener('mouseover', () => clearTimeout());
 					tag.popupElement.addEventListener('mouseleave', () => tag.hide());
@@ -196,7 +199,7 @@ class Taggd extends EventEmitter
 			{
 				const tagIndex = this.tags.indexOf(tag);
 
-				if (tagIndex >= 0)
+				if(tagIndex >= 0)
 				{
 					this.deleteTag(tagIndex);
 				}
@@ -207,7 +210,16 @@ class Taggd extends EventEmitter
 			{
 				this.emit(eventName, this, ...args);
 			});
-
+			if(this.options.listType !== this.LIST_TYPES.none)
+			{
+				let no = this.tags.length + 1;
+				let t = no;
+				if(this.options.listType === this.LIST_TYPES.letter)
+				{
+					t = String.fromCharCode(96 + t);
+				}
+				tag.setButtonAttributes({ textContent: t });
+			}
 			this.tags.push(tag);
 			this.wrapper.appendChild(tag.wrapperElement);
 
@@ -224,7 +236,7 @@ class Taggd extends EventEmitter
 	 */
 	getTag(index)
 	{
-		if (!Number.isInteger(index))
+		if(!Number.isInteger(index))
 		{
 			throw new TypeError(TypeErrorMessage.getIntegerMessage(index));
 		}
@@ -239,12 +251,12 @@ class Taggd extends EventEmitter
 	 */
 	deleteTag(index)
 	{
-		if (!Number.isInteger(index))
+		if(!Number.isInteger(index))
 		{
 			throw new TypeError(TypeErrorMessage.getIntegerMessage(index));
 		}
 
-		if (!this.tags[index])
+		if(!this.tags[index])
 		{
 			throw new Error(`Tag at index ${index} does not exist.`);
 		}
@@ -252,7 +264,7 @@ class Taggd extends EventEmitter
 		const tag = this.tags[index];
 		const isCanceled = !this.emit('taggd.tag.delete', this, tag);
 
-		if (!isCanceled)
+		if(!isCanceled)
 		{
 			this.wrapper.removeChild(tag.wrapperElement);
 			this.tags.splice(index, 1);
@@ -277,7 +289,7 @@ class Taggd extends EventEmitter
 
 	importTags(tagsData, replace)
 	{
-		if (!Array.isArray(tagsData))
+		if(!Array.isArray(tagsData))
 		{
 			throw new TypeError(TypeErrorMessage.getArrayMessage(tagsData, 'object'));
 		}
@@ -296,7 +308,7 @@ class Taggd extends EventEmitter
 	 */
 	addTags(tags)
 	{
-		if (!Array.isArray(tags))
+		if(!Array.isArray(tags))
 		{
 			throw new TypeError(TypeErrorMessage.getArrayMessage(tags, 'Taggd.Tag'));
 		}
@@ -320,7 +332,7 @@ class Taggd extends EventEmitter
 	 */
 	deleteTags()
 	{
-		while (this.tags.length > 0)
+		while(this.tags.length > 0)
 		{
 			this.deleteTag(0);
 		}
@@ -334,7 +346,7 @@ class Taggd extends EventEmitter
 	 */
 	map(callback)
 	{
-		if (!ObjectIs.function(callback))
+		if(!ObjectIs.function(callback))
 		{
 			throw new TypeError(TypeErrorMessage.getFunctionMessage(callback));
 		}
@@ -351,7 +363,7 @@ class Taggd extends EventEmitter
 	{
 		const isCanceled = !this.emit('taggd.destroy', this);
 
-		if (!isCanceled)
+		if(!isCanceled)
 		{
 			this.deleteTags();
 		}
@@ -365,20 +377,15 @@ class Taggd extends EventEmitter
 	 */
 	enableEditorMode(enable)
 	{
-		if(enable === undefined)
+		let enabling = true;
+		if(enable !== undefined)
 		{
-			enable = true;
+			enabling = enable;
 		}
-		var evName = 'taggd.editor.enable';
-		var evAction = this.image.addEventListener;
-		if(!enable)
-		{
-			evName = 'taggd.editor.disable';
-			evAction = this.image.removeEventListener;
-		}
-		const isCanceled = !this.emit(evNamed, this);
+		const evName = enabling ? 'taggd.editor.enable' : 'taggd.editor.disable';
+		const isCanceled = !this.emit(evName, this);
 
-		if (!isCanceled)
+		if(!isCanceled)
 		{
 			this.image.addEventListener('click', this.imageClickHandler);
 			this.getTags().forEach((tag) => tag.enableControls(enable));
@@ -393,11 +400,11 @@ class Taggd extends EventEmitter
 	 */
 	disableEditorMode()
 	{
-		return enableEditorMode(false);
+		return this.enableEditorMode(false);
 		/*
 		const isCanceled = !this.emit('taggd.editor.disable', this);
 
-		if (!isCanceled)
+		if(!isCanceled)
 		{
 			this.image.removeEventListener('click', this.imageClickHandler);
 			this.getTags().forEach((tag) => tag.disableControls());
@@ -418,6 +425,13 @@ Taggd.DEFAULT_OPTIONS = {
 	show: 'mouseenter',
 	hide: 'mouseleave',
 	hideDelay: 500,
+	list: false,
+	listType: 'none',
+};
+Taggd.LIST_TYPES = {
+	none: 0,
+	number: 1,
+	letter: 2,
 };
 
 module.exports = Taggd;

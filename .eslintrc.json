@@ -9,6 +9,14 @@
 		"indent": ["error", "tab"],
 		"brace-style": ["error", "allman"],
 		"no-tabs": ["error", {"allowIndentationTabs": true}],
-		"arrow-parens": ["error", "always"]
+		"arrow-parens": ["error", "always"],
+		"keyword-spacing": ["error", {
+			"overrides":
+			{
+				"if": { "after": false },
+				"for": { "after": false },
+				"while": { "after": false }
+			}
+		}]
 	}
 }

@@ -103,14 +103,24 @@ class Tag extends EventEmitter
 	 * Show the tag
 	 * @return {Taggd.Tag} Current Tag
 	 */
-	show()
+	show(show)
 	{
-		const isCanceled = !this.emit('taggd.tag.show', this);
-
-		if (!isCanceled)
+		const showing = show === undefined ? true : show;
+		let vName = 'taggd.tag.show';
+		let vDisplay = '';
+		let vNameFinish = 'taggd.tag.shown';
+		if(!showing)
 		{
-			this.popupElement.style.display = '';
-			this.emit('taggd.tag.shown', this);
+			vName = 'taggd.tag.hide';
+			vDisplay = 'none';
+			vNameFinish = 'taggd.tag.hidden';
+		}
+		const isCanceled = !this.emit(vName, this);
+
+		if(!isCanceled)
+		{
+			this.popupElement.style.display = vDisplay;
+			this.emit(vNameFinish, this);
 		}
 
 		return this;
@@ -122,6 +132,8 @@ class Tag extends EventEmitter
 	 */
 	hide()
 	{
+		return this.show(false);
+		/*
 		const isCanceled = !this.emit('taggd.tag.hide', this);
 
 		if (!isCanceled)
@@ -131,6 +143,7 @@ class Tag extends EventEmitter
 		}
 
 		return this;
+		*/
 	}
 
 	/**
@@ -306,7 +319,7 @@ class Tag extends EventEmitter
 	 */
 	disableControls()
 	{
-		return enableControls(false);
+		return this.enableControls(false);
 	}
 
 	/**
