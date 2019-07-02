@@ -210,6 +210,8 @@ class Taggd extends EventEmitter
 				}
 				tag.setButtonAttributes({ text: t });
 			}
+			tag.enableLinks(this.options.links);
+			tag.refreshContent();
 			this.tags.push(tag);
 			this.wrapper.appendChild(tag.wrapperElement);
 			if(this.options.list)
@@ -428,9 +430,13 @@ class Taggd extends EventEmitter
 
 	renderList()
 	{
-		const list = [];
-		this.tags.forEach((tag) => list.push('<li>', tag.getText(), '</li>'));
-		this.listElement.innerHTML = list.join('');
+		if(this.listElement)
+		{
+			const list = [];
+			this.tags.forEach((tag) => list.push('<li>', tag.getText(), '</li>'));
+			this.listElement.innerHTML = list.join('');
+		}
+		return this;
 	}
 
 	enableListMode(enable)
@@ -452,6 +458,14 @@ class Taggd extends EventEmitter
 			// this.getTags().forEach((tag) => tag.enableControls(enable));
 		}
 
+		return this;
+	}
+
+	enableLinks(enable = false)
+	{
+		this.options.links = enable;
+		this.tags.forEach((tag) => tag.enableLinks(enable).refreshContent());
+		this.renderList();
 		return this;
 	}
 }

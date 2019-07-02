@@ -8,10 +8,11 @@ class Tag extends EventEmitter
 	 * Create a new Tag instance
 	 * @param {{ x: Number, y: Number }} position - The tag’s coordinates
 	 * @param {String|Function} text - The tag’s content
+	 * @param {String|Function} url - The tag’s link url
 	 * @param {Object} [buttonAttributes = {}] - The button’s attributes
 	 * @param {Object} [popupAttributes = {}] - The popup’s attributes
 	 */
-	constructor(position, text, url = false, buttonAttributes = {}, popupAttributes = {})
+	constructor(position, text, url = '', buttonAttributes = {}, popupAttributes = {})
 	{
 		if(!ObjectIs.ofType(position, 'object') || Array.isArray(position))
 		{
@@ -28,7 +29,7 @@ class Tag extends EventEmitter
 		{
 			popupAtts = buttonAttributes;
 			buttonAtts = url;
-			link = false;
+			link = '';
 		}
 
 		super();
@@ -44,6 +45,8 @@ class Tag extends EventEmitter
 
 		this.wrapperElement.appendChild(this.buttonElement);
 		this.wrapperElement.appendChild(this.popupElement);
+
+		this.urlEnabled = false;
 
 		this.isControlsEnabled = false;
 		this.inputLabelElement = undefined;
@@ -63,12 +66,13 @@ class Tag extends EventEmitter
 		};
 
 		this.text = undefined;
-		this.url = link;
+		this.url = undefined;
 
 		this.setButtonAttributes(buttonAtts);
 		this.setPopupAttributes(popupAtts);
 		this.setPosition(position.x, position.y);
 		this.setText(text);
+		this.setUrl(link);
 
 		this.hide();
 	}
@@ -162,6 +166,12 @@ class Tag extends EventEmitter
 		*/
 	}
 
+	enableLinks(enable = false)
+	{
+		this.urlEnabled = enable;
+		return this;
+	}
+
 	/**
 	 * Set the tag’s text
 	 * @param {String|Function} text - The tag’s content
@@ -204,7 +214,7 @@ class Tag extends EventEmitter
 
 	getText(display = true)
 	{
-		if(display && this.url)
+		if(display && this.urlEnabled && this.url)
 		{
 			return ['<a href="', this.url, '" target="_blank">', this.text, ' <i class="fas fa-external-link-alt"></i></a>'].join('');
 		}
@@ -341,6 +351,8 @@ class Tag extends EventEmitter
 
 			this.buttonSaveElement.innerHTML = Tag.LABEL_BUTTON_SAVE;
 			this.buttonDeleteElement.innerHTML = Tag.LABEL_BUTTON_DELETE;
+			this.inputLabelElement.setAttribute('placeholder', Tag.LABEL_INPUT_LABEL);
+			this.inputUrlElement.setAttribute('placeholder', Tag.LABEL_INPUT_URL);
 
 			this.buttonSaveElement.addEventListener('click', this.buttonSaveElementClickHandler);
 			this.buttonDeleteElement.addEventListener('click', this.buttonDeleteElementClickHandler);
@@ -362,7 +374,14 @@ class Tag extends EventEmitter
 			this.buttonDeleteElement = undefined;
 		}
 		// Set input content
+		this.refreshContent();
+		return this;
+	}
+
+	refreshContent()
+	{
 		this.setText(this.text);
+		this.setUrl(this.url);
 		return this;
 	}
 
@@ -404,6 +423,7 @@ class Tag extends EventEmitter
 				y: (parseFloat(this.wrapperElement.style.top) / 100.0),
 			},
 			text: this.text,
+			url: this.url,
 			buttonAttributes: getAttributes(this.buttonElement.attributes),
 			popupAttributes: getAttributes(this.popupElement.attributes),
 		};
@@ -433,8 +453,11 @@ class Tag extends EventEmitter
 
 			if(attributeName === 'class' && element.getAttribute(attributeName))
 			{
+				element.classList.add(attributeValue);
+				/*
 				const classValue = `${element.getAttribute(attributeName)} ${attributeValue}`;
 				element.setAttribute(attributeName, classValue);
+				*/
 				return;
 			}
 
@@ -504,5 +527,8 @@ Tag.LABEL_BUTTON_SAVE = 'save';
  * @type {String}
  */
 Tag.LABEL_BUTTON_DELETE = 'delete';
+
+Tag.LABEL_INPUT_LABEL = 'Label';
+Tag.LABEL_INPUT_URL = 'Url';
 
 module.exports = Tag;

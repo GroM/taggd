@@ -27,6 +27,7 @@
 				<button id="btn-import">Importuj</button>
 				<label><input type="checkbox" id="btn-editor" /> Edytor</label>
 				<label><input type="checkbox" id="btn-list" checked /> Legenda</label>
+				<label><input type="checkbox" id="btn-url" checked /> Linki</label>
 			</div>
 			<div id="TaggdList">
 			</div>
@@ -41,7 +42,10 @@
 		var image = document.getElementById('image');
 		Taggd.Tag.LABEL_BUTTON_SAVE = '<i class="fas fa-2x fa-plus-square"></i>';
 		Taggd.Tag.LABEL_BUTTON_DELETE = '<i class="fas fa-2x fa-minus-square"></i>';
-		var taggd = new Taggd(image, {listType: Taggd.LIST_TYPES.number, list: 'TaggdList'});
+		var btnLinks = document.getElementById('btn-url');
+		var taggdOpt = {listType: Taggd.LIST_TYPES.number, list: 'TaggdList', links: btnLinks.checked};
+		console.log('taggdOptions', taggdOpt);
+		var taggd = new Taggd(image, taggdOpt);
 		var canSave = storageAvailable('localStorage');
 		if(canSave)
 		{
@@ -60,6 +64,9 @@
 		});
 		btnList.addEventListener('change', function(){
 			taggd.enableListMode(btnList.checked);
+		});
+		btnLinks.addEventListener('change', function(){
+			taggd.enableLinks(btnLinks.checked);
 		});
 		btnGenerateOutput.addEventListener('click', function () {
 			output.innerHTML = JSON.stringify(taggd.getTags(), null, 2);
