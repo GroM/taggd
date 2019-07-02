@@ -14,7 +14,7 @@ class EventEmitter
 
 	on(eventName, handler)
 	{
-		if (!this.handlers[eventName])
+		if(!this.handlers[eventName])
 		{
 			this.handlers[eventName] = [];
 		}
@@ -24,11 +24,14 @@ class EventEmitter
 
 	off(eventName, handler)
 	{
-		if (!this.handlers[eventName]) return;
+		if(!this.handlers[eventName])
+		{
+			return;
+		}
 
 		const handlerIndex = this.handlers[eventName].indexOf(handler);
 
-		if (handlerIndex >= 0)
+		if(handlerIndex >= 0)
 		{
 			this.handlers[eventName].splice(handlerIndex, 1);
 		}
@@ -47,7 +50,7 @@ class EventEmitter
 	{
 		let isCanceled = false;
 
-		if (this.handlers[EVENT_WILDCARD])
+		if(this.handlers[EVENT_WILDCARD])
 		{
 			this.handlers[EVENT_WILDCARD].forEach((eventHandler) =>
 			{
@@ -56,7 +59,7 @@ class EventEmitter
 			});
 		}
 
-		if (this.handlers[eventName])
+		if(this.handlers[eventName])
 		{
 			this.handlers[eventName].forEach((eventHandler) =>
 			{

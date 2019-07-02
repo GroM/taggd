@@ -11,15 +11,24 @@ class Tag extends EventEmitter
 	 * @param {Object} [buttonAttributes = {}] - The button’s attributes
 	 * @param {Object} [popupAttributes = {}] - The popup’s attributes
 	 */
-	constructor(position, text, buttonAttributes = {}, popupAttributes = {})
+	constructor(position, text, url = false, buttonAttributes = {}, popupAttributes = {})
 	{
-		if (!ObjectIs.ofType(position, 'object') || Array.isArray(position))
+		if(!ObjectIs.ofType(position, 'object') || Array.isArray(position))
 		{
 			throw new TypeError(TypeErrorMessage.getObjectMessage(position));
 		}
-		else if (!('x' in position) || !('y' in position))
+		else if(!('x' in position) || !('y' in position))
 		{
 			throw new Error(`${position} should have x and y property`);
+		}
+		let buttonAtts = buttonAttributes;
+		let popupAtts = popupAttributes;
+		let link = url;
+		if(ObjectIs.ofType(url, 'object'))
+		{
+			popupAtts = buttonAttributes;
+			buttonAtts = url;
+			link = false;
 		}
 
 		super();
@@ -40,17 +49,24 @@ class Tag extends EventEmitter
 		this.inputLabelElement = undefined;
 		this.buttonSaveElement = undefined;
 		this.buttonDeleteElement = undefined;
+		this.inputUrlElement = undefined;
 
-		this.buttonSaveElementClickHandler = () => this.setText(this.inputLabelElement.value);
+		this.buttonSaveElementClickHandler = () =>
+		{
+			this.setText(this.inputLabelElement.value);
+			this.setUrl(this.inputUrlElement.value);
+		};
+
 		this.buttonDeleteElementClickHandler = () =>
 		{
 			this.emit('taggd.tag.delete', this);
 		};
 
 		this.text = undefined;
+		this.url = link;
 
-		this.setButtonAttributes(buttonAttributes);
-		this.setPopupAttributes(popupAttributes);
+		this.setButtonAttributes(buttonAtts);
+		this.setPopupAttributes(popupAtts);
 		this.setPosition(position.x, position.y);
 		this.setText(text);
 
@@ -136,7 +152,7 @@ class Tag extends EventEmitter
 		/*
 		const isCanceled = !this.emit('taggd.tag.hide', this);
 
-		if (!isCanceled)
+		if(!isCanceled)
 		{
 			this.popupElement.style.display = 'none';
 			this.emit('taggd.tag.hidden', this);
@@ -153,16 +169,16 @@ class Tag extends EventEmitter
 	 */
 	setText(text)
 	{
-		if (!ObjectIs.ofType(text, 'string') && !ObjectIs.function(text))
+		if(!ObjectIs.ofType(text, 'string') && !ObjectIs.function(text))
 		{
 			throw new TypeError(TypeErrorMessage.getMessage(text, 'a string or a function'));
 		}
 
 		const isCanceled = !this.emit('taggd.tag.change', this);
 
-		if (!isCanceled)
+		if(!isCanceled)
 		{
-			if (ObjectIs.function(text))
+			if(ObjectIs.function(text))
 			{
 				this.text = text(this);
 			}
@@ -171,18 +187,51 @@ class Tag extends EventEmitter
 				this.text = text;
 			}
 
-			if (!this.isControlsEnabled)
+			if(this.isControlsEnabled)
 			{
-				this.popupElement.innerHTML = this.text;
+				this.inputLabelElement.value = this.getText(false);
 			}
 			else
 			{
-				this.inputLabelElement.value = this.text;
+				this.popupElement.innerHTML = this.getText();
 			}
 
 			this.emit('taggd.tag.changed', this);
 		}
 
+		return this;
+	}
+
+	getText(display = true)
+	{
+		if(display && this.url)
+		{
+			return ['<a href="', this.url, '" target="_blank">', this.text, ' <i class="fas fa-external-link-alt"></i></a>'].join('');
+		}
+		return this.text;
+	}
+
+	setUrl(url)
+	{
+		if(!ObjectIs.ofType(url, 'string'))
+		{
+			throw new TypeError(TypeErrorMessage.getMessage(url, 'a string'));
+		}
+		const isCanceled = !this.emit('taggd.tag.change', this);
+
+		if(!isCanceled)
+		{
+			this.url = url;
+			if(this.isControlsEnabled)
+			{
+				this.inputUrlElement.value = this.url;
+			}
+			else
+			{
+				this.popupElement.innerHTML = this.getText();
+			}
+			this.emit('taggd.tag.changed', this);
+		}
 		return this;
 	}
 
@@ -194,18 +243,18 @@ class Tag extends EventEmitter
 	 */
 	setPosition(x, y)
 	{
-		if (!ObjectIs.number(x))
+		if(!ObjectIs.number(x))
 		{
 			throw new TypeError(TypeErrorMessage.getFloatMessage(x));
 		}
-		if (!ObjectIs.number(y))
+		if(!ObjectIs.number(y))
 		{
 			throw new TypeError(TypeErrorMessage.getFloatMessage(y));
 		}
 
 		const isCanceled = !this.emit('taggd.tag.change', this);
 
-		if (!isCanceled)
+		if(!isCanceled)
 		{
 			const positionStyle = Tag.getPositionStyle(x, y);
 
@@ -225,14 +274,14 @@ class Tag extends EventEmitter
 	 */
 	setButtonAttributes(attributes = {})
 	{
-		if (!ObjectIs.ofType(attributes, 'object') || Array.isArray(attributes))
+		if(!ObjectIs.ofType(attributes, 'object') || Array.isArray(attributes))
 		{
 			throw new TypeError(TypeErrorMessage.getObjectMessage(attributes));
 		}
 
 		const isCanceled = !this.emit('taggd.tag.change', this);
 
-		if (!isCanceled)
+		if(!isCanceled)
 		{
 			Tag.setElementAttributes(this.buttonElement, attributes);
 			this.emit('taggd.tag.changed', this);
@@ -248,14 +297,14 @@ class Tag extends EventEmitter
 	 */
 	setPopupAttributes(attributes = {})
 	{
-		if (!ObjectIs.ofType(attributes, 'object') || Array.isArray(attributes))
+		if(!ObjectIs.ofType(attributes, 'object') || Array.isArray(attributes))
 		{
 			throw new TypeError(TypeErrorMessage.getObjectMessage(attributes));
 		}
 
 		const isCanceled = !this.emit('taggd.tag.change', this);
 
-		if (!isCanceled)
+		if(!isCanceled)
 		{
 			Tag.setElementAttributes(this.popupElement, attributes);
 			this.emit('taggd.tag.changed', this);
@@ -270,18 +319,17 @@ class Tag extends EventEmitter
 	 */
 	enableControls(enable)
 	{
-		if(enable === undefined)
-		{
-			enable = true;
-		}
-		this.isControlsEnabled = enable;
-		if(enable)
+		const enabling = (enable === undefined) ? true : enable;
+		this.isControlsEnabled = enabling;
+		if(enabling)
 		{
 			this.inputLabelElement = document.createElement('input');
+			this.inputUrlElement = document.createElement('input');
 			this.buttonSaveElement = document.createElement('button');
 			this.buttonDeleteElement = document.createElement('button');
 
 			this.inputLabelElement.classList.add('taggd__editor-input');
+			this.inputUrlElement.classList.add('taggd__editor-input');
 			this.buttonSaveElement.classList.add(
 				'taggd__editor-button',
 				'taggd__editor-button--save',
@@ -299,12 +347,17 @@ class Tag extends EventEmitter
 
 			this.popupElement.innerHTML = '';
 			this.popupElement.appendChild(this.inputLabelElement);
+			if(this.url)
+			{
+				this.popupElement.appendChild(this.inputUrlElement);
+			}
 			this.popupElement.appendChild(this.buttonSaveElement);
 			this.popupElement.appendChild(this.buttonDeleteElement);
 		}
 		else
 		{
 			this.inputLabelElement = undefined;
+			this.inputUrlElement = undefined;
 			this.buttonSaveElement = undefined;
 			this.buttonDeleteElement = undefined;
 		}
@@ -331,24 +384,24 @@ class Tag extends EventEmitter
 		function getAttributes(rawAttributes)
 		{
 			const attributes = {};
-
+			let modified = false;
 			Array.prototype.forEach.call(rawAttributes, (attribute) =>
 			{
-				if (attribute.name === 'class' || attribute.name === 'style')
+				if(attribute.name === 'class' || attribute.name === 'style')
 				{
 					return;
 				}
 
 				attributes[attribute.name] = attribute.value;
+				modified = true;
 			});
 
-			return attributes;
+			return modified ? attributes : undefined;
 		}
-
 		return {
 			position: {
-				x: parseFloat(this.wrapperElement.style.left) / 100,
-				y: parseFloat(this.wrapperElement.style.top) / 100,
+				x: (parseFloat(this.wrapperElement.style.left) / 100.0),
+				y: (parseFloat(this.wrapperElement.style.top) / 100.0),
 			},
 			text: this.text,
 			buttonAttributes: getAttributes(this.buttonElement.attributes),
@@ -364,7 +417,7 @@ class Tag extends EventEmitter
 	 */
 	static setElementAttributes(element, attributes = {})
 	{
-		if (!ObjectIs.ofType(attributes, 'object') || Array.isArray(attributes))
+		if(!ObjectIs.ofType(attributes, 'object') || Array.isArray(attributes))
 		{
 			throw new TypeError(TypeErrorMessage.getObjectMessage(attributes));
 		}
@@ -372,8 +425,13 @@ class Tag extends EventEmitter
 		Object.entries(attributes).forEach((attribute) =>
 		{
 			const [attributeName, attributeValue] = attribute;
+			if(attributeName === 'text')
+			{
+				element.textContent = attributeValue;
+				return;
+			}
 
-			if (attributeName === 'class' && element.getAttribute(attributeName))
+			if(attributeName === 'class' && element.getAttribute(attributeName))
 			{
 				const classValue = `${element.getAttribute(attributeName)} ${attributeValue}`;
 				element.setAttribute(attributeName, classValue);
@@ -394,11 +452,11 @@ class Tag extends EventEmitter
 	 */
 	static getPositionStyle(x, y)
 	{
-		if (!ObjectIs.number(x))
+		if(!ObjectIs.number(x))
 		{
 			throw new TypeError(TypeErrorMessage.getFloatMessage(x));
 		}
-		if (!ObjectIs.number(y))
+		if(!ObjectIs.number(y))
 		{
 			throw new TypeError(TypeErrorMessage.getFloatMessage(y));
 		}
@@ -419,6 +477,7 @@ class Tag extends EventEmitter
 		return new Tag(
 			object.position,
 			object.text,
+			object.url,
 			object.buttonAttributes,
 			object.popupAttributes,
 		);

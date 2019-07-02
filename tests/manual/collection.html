@@ -26,6 +26,9 @@
 				<button id="btn-save">Zapisz</button>
 				<button id="btn-import">Importuj</button>
 				<label><input type="checkbox" id="btn-editor" /> Edytor</label>
+				<label><input type="checkbox" id="btn-list" checked /> Legenda</label>
+			</div>
+			<div id="TaggdList">
 			</div>
 			<textarea id="data"></textarea>
 			<pre id="output"></pre>
@@ -38,7 +41,7 @@
 		var image = document.getElementById('image');
 		Taggd.Tag.LABEL_BUTTON_SAVE = '<i class="fas fa-2x fa-plus-square"></i>';
 		Taggd.Tag.LABEL_BUTTON_DELETE = '<i class="fas fa-2x fa-minus-square"></i>';
-		var taggd = new Taggd(image);
+		var taggd = new Taggd(image, {listType: Taggd.LIST_TYPES.number, list: 'TaggdList'});
 		var canSave = storageAvailable('localStorage');
 		if(canSave)
 		{
@@ -50,9 +53,13 @@
 		var btnGenerateOutput = document.getElementById('btn-generate-output');
 		var output = document.getElementById('output');
 		var btnEditor = document.getElementById('btn-editor');
+		var btnList = document.getElementById('btn-list');
 		var btnDefault = document.getElementById('btn-default');
 		btnEditor.addEventListener('change', function(){
 			taggd.enableEditorMode(btnEditor.checked);
+		});
+		btnList.addEventListener('change', function(){
+			taggd.enableListMode(btnList.checked);
 		});
 		btnGenerateOutput.addEventListener('click', function () {
 			output.innerHTML = JSON.stringify(taggd.getTags(), null, 2);
@@ -66,6 +73,7 @@
 						"y": 0.265
 					},
 					"text": "Kurtka",
+					"url": "https://butik.pl/"
 				},
 				{
 					"position": {

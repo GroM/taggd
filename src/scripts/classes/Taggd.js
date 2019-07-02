@@ -22,7 +22,6 @@ class Taggd extends EventEmitter
 		}
 
 		super();
-
 		this.wrapper = document.createElement('div');
 		this.wrapper.classList.add('taggd');
 
@@ -53,6 +52,7 @@ class Taggd extends EventEmitter
 		};
 
 		this.setOptions(options);
+		this.prepareList();
 		this.setTags(data);
 	}
 
@@ -148,16 +148,6 @@ class Taggd extends EventEmitter
 					clearTimeout();
 
 					tag.show(tag.IsHidden());
-					/*
-					if(tag.isHidden())
-					{
-						tag.show();
-					}
-					else
-					{
-						tag.hide();
-					}
-					*/
 				});
 			}
 			else
@@ -210,18 +200,22 @@ class Taggd extends EventEmitter
 			{
 				this.emit(eventName, this, ...args);
 			});
-			if(this.options.listType !== this.LIST_TYPES.none)
+			if(this.options.listType !== Taggd.LIST_TYPES.none)
 			{
 				let no = this.tags.length + 1;
 				let t = no;
-				if(this.options.listType === this.LIST_TYPES.letter)
+				if(this.options.listType === Taggd.LIST_TYPES.letter)
 				{
 					t = String.fromCharCode(96 + t);
 				}
-				tag.setButtonAttributes({ textContent: t });
+				tag.setButtonAttributes({ text: t });
 			}
 			this.tags.push(tag);
 			this.wrapper.appendChild(tag.wrapperElement);
+			if(this.options.list)
+			{
+				this.renderList();
+			}
 
 			this.emit('taggd.tag.added', this, tag);
 		}
@@ -413,7 +407,61 @@ class Taggd extends EventEmitter
 		return this;
 		*/
 	}
+
+	prepareList()
+	{
+		if(this.options.list)
+		{
+			this.listElementWrapper = document.getElementById(this.options.list);
+			this.listElementWrapper.innerHTML = '';
+			this.listElement = document.createElement('ol');
+			this.listElement.classList.add('taggd_list');
+			const listTypes2Style = {
+				[Taggd.LIST_TYPES.none]: 'taggd_list_none',
+				[Taggd.LIST_TYPES.number]: 'taggd_list_number',
+				[Taggd.LIST_TYPES.letter]: 'taggd_list_letter',
+			};
+			this.listElement.classList.add(listTypes2Style[this.options.listType]);
+			this.listElementWrapper.appendChild(this.listElement);
+		}
+	}
+
+	renderList()
+	{
+		const list = [];
+		this.tags.forEach((tag) => list.push('<li>', tag.getText(), '</li>'));
+		this.listElement.innerHTML = list.join('');
+	}
+
+	enableListMode(enable)
+	{
+		if(enable && !this.listElement)
+		{
+			throw new Error();
+		}
+		const evName = enable ? 'taggd.list.enable' : 'taggd.list.disable';
+		const isCanceled = !this.emit(evName, this);
+
+		if(!isCanceled)
+		{
+			if(enable)
+			{
+				this.renderList();
+			}
+			this.listElement.style.display = enable ? '' : 'none';
+			// this.getTags().forEach((tag) => tag.enableControls(enable));
+		}
+
+		return this;
+	}
 }
+
+
+Taggd.LIST_TYPES = {
+	none: 0,
+	number: 1,
+	letter: 2,
+};
 
 /**
  * Default options for all Taggd instances
@@ -425,14 +473,11 @@ Taggd.DEFAULT_OPTIONS = {
 	show: 'mouseenter',
 	hide: 'mouseleave',
 	hideDelay: 500,
+	links: false,
 	list: false,
-	listType: 'none',
+	listType: Taggd.LIST_TYPES.none,
 };
-Taggd.LIST_TYPES = {
-	none: 0,
-	number: 1,
-	letter: 2,
-};
+
 
 module.exports = Taggd;
 module.exports.Tag = Tag;
