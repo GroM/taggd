@@ -359,7 +359,7 @@ class Tag extends EventEmitter
 
 			this.popupElement.innerHTML = '';
 			this.popupElement.appendChild(this.inputLabelElement);
-			if(this.url)
+			if(this.urlEnabled)
 			{
 				this.popupElement.appendChild(this.inputUrlElement);
 			}
