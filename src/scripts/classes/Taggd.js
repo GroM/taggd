@@ -264,6 +264,8 @@ class Taggd extends EventEmitter
 		{
 			this.wrapper.removeChild(tag.wrapperElement);
 			this.tags.splice(index, 1);
+			this.reindexTags();
+			this.renderList();
 
 			this.emit('taggd.tag.deleted', this, tag);
 		}
@@ -351,6 +353,11 @@ class Taggd extends EventEmitter
 		return this;
 	}
 
+	reindexTags()
+	{
+		return this.map((item, index) => item.setButtonAttributes({text: index + 1}));
+	}
+
 	/**
 	 * Clean up memory
 	 * @return {Taggd} Current Taggd instance
@@ -430,7 +437,7 @@ class Taggd extends EventEmitter
 
 	renderList()
 	{
-		if(this.listElement)
+		if(this.options.list && this.listElement)
 		{
 			const list = [];
 			this.tags.forEach((tag) => list.push('<li>', tag.getText(), '</li>'));
