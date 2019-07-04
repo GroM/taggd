@@ -12,7 +12,7 @@ class Tag extends EventEmitter
 	 * @param {Object} [buttonAttributes = {}] - The button’s attributes
 	 * @param {Object} [popupAttributes = {}] - The popup’s attributes
 	 */
-	constructor(position, text, url = '', buttonAttributes = {}, popupAttributes = {})
+	constructor(position, text, url = '', buttonAttributes = {}, popupAttributes = {}, status = Tag.STATUS.new)
 	{
 		if(!ObjectIs.ofType(position, 'object') || Array.isArray(position))
 		{
@@ -33,6 +33,9 @@ class Tag extends EventEmitter
 		}
 
 		super();
+
+		this.status = status;
+		this.indexClass = '';
 
 		this.wrapperElement = document.createElement('div');
 		this.wrapperElement.classList.add('taggd__wrapper');
@@ -58,6 +61,7 @@ class Tag extends EventEmitter
 		{
 			this.setText(this.inputLabelElement.value);
 			this.setUrl(this.inputUrlElement.value);
+			this.status = Tag.STATUS.saved;
 		};
 
 		this.buttonDeleteElementClickHandler = () =>
@@ -219,6 +223,23 @@ class Tag extends EventEmitter
 			return ['<a href="', this.url, '" target="_blank">', this.text, ' <i class="fas fa-external-link-alt"></i></a>'].join('');
 		}
 		return this.text;
+	}
+
+	setIndex(no)
+	{
+		this.indexClass = Tag.getItemClass(no);
+		Tag.setElementAttributes(this.wrapperElement, { class: this.getIndexClass() });
+		return this.setButtonAttributes({ text: no });
+	}
+
+	getIndexClass()
+	{
+		return this.indexClass;
+	}
+
+	static getItemClass(no)
+	{
+		return `taggd__item-${no}`;
 	}
 
 	setUrl(url)
@@ -503,9 +524,16 @@ class Tag extends EventEmitter
 			object.url,
 			object.buttonAttributes,
 			object.popupAttributes,
+			Tag.STATUS.saved
 		);
 	}
 }
+
+Tag.STATUS = {
+	deleted: -1,
+	new: 0,
+	saved: 1,
+};
 
 /**
  * Label for a new tag
@@ -513,7 +541,7 @@ class Tag extends EventEmitter
  * @type {String}
  * @ignore
  */
-Tag.LABEL_NEW_TAG = 'New tag';
+Tag.LABEL_NEW_TAG = '';
 /**
  * Label for save button
  * @const

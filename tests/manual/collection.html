@@ -40,10 +40,12 @@
 	<script src="../functions.js"></script>
 	<script>
 		var image = document.getElementById('image');
-		Taggd.Tag.LABEL_BUTTON_SAVE = '<i class="fas fa-2x fa-plus-square"></i>';
-		Taggd.Tag.LABEL_BUTTON_DELETE = '<i class="fas fa-2x fa-minus-square"></i>';
+		Taggd.Tag.LABEL_BUTTON_SAVE = '<i class="fas fa-save"></i>';
+		Taggd.Tag.LABEL_BUTTON_DELETE = '<i class="fas fa-trash-alt"></i>';
+		Taggd.Tag.LABEL_INPUT_LABEL = 'Tekst';
+		Taggd.Tag.LABEL_INPUT_URL = 'Link';
 		var btnLinks = document.getElementById('btn-url');
-		var taggdOpt = {listType: Taggd.LIST_TYPES.number, list: 'TaggdList', links: btnLinks.checked};
+		var taggdOpt = {listType: Taggd.LIST_TYPES.number_fancy, list: 'TaggdList', links: btnLinks.checked};
 		console.log('taggdOptions', taggdOpt);
 		var taggd = new Taggd(image, taggdOpt);
 		var canSave = storageAvailable('localStorage');

@@ -46,6 +46,7 @@ class Taggd extends EventEmitter
 			};
 
 			const tag = new Tag(position, Tag.LABEL_NEW_TAG);
+			tag.enableLinks(this.options.links);
 			tag.enableControls();
 
 			this.addTag(tag);
@@ -202,13 +203,8 @@ class Taggd extends EventEmitter
 			});
 			if(this.options.listType !== Taggd.LIST_TYPES.none)
 			{
-				let no = this.tags.length + 1;
-				let t = no;
-				if(this.options.listType === Taggd.LIST_TYPES.letter)
-				{
-					t = String.fromCharCode(96 + t);
-				}
-				tag.setButtonAttributes({ text: t });
+				const no = this.tags.length + 1;
+				tag.setIndex(this.numerator(no));
 			}
 			tag.enableLinks(this.options.links);
 			tag.refreshContent();
@@ -223,6 +219,20 @@ class Taggd extends EventEmitter
 		}
 
 		return this;
+	}
+
+	numerator(index)
+	{
+		if(!Number.isInteger(index))
+		{
+			throw new TypeError(TypeErrorMessage.getIntegerMessage(index));
+		}
+		let t = index;
+		if(this.options.listType === Taggd.LIST_TYPES.letter)
+		{
+			t = String.fromCharCode(96 + t);
+		}
+		return t;
 	}
 
 	/**
@@ -355,7 +365,7 @@ class Taggd extends EventEmitter
 
 	reindexTags()
 	{
-		return this.map((item, index) => item.setButtonAttributes({text: index + 1}));
+		return this.map((item, index) => item.setIndex(this.enumerator(index + 1)));
 	}
 
 	/**
@@ -387,10 +397,13 @@ class Taggd extends EventEmitter
 		}
 		const evName = enabling ? 'taggd.editor.enable' : 'taggd.editor.disable';
 		const isCanceled = !this.emit(evName, this);
+		const fnc = enabling ? 'addEventListener' : 'removeEventListener';
+		const fncC = enabling ? 'add' : 'remove';
 
 		if(!isCanceled)
 		{
-			this.image.addEventListener('click', this.imageClickHandler);
+			this.wrapper.classList[fncC]('taggd__editor');
+			this.image[fnc]('click', this.imageClickHandler);
 			this.getTags().forEach((tag) => tag.enableControls(enable));
 		}
 
@@ -419,18 +432,20 @@ class Taggd extends EventEmitter
 
 	prepareList()
 	{
-		if(this.options.list)
+		if(this.options.list && this.options.listType !== undefined)
 		{
 			this.listElementWrapper = document.getElementById(this.options.list);
 			this.listElementWrapper.innerHTML = '';
 			this.listElement = document.createElement('ol');
 			this.listElement.classList.add('taggd_list');
 			const listTypes2Style = {
-				[Taggd.LIST_TYPES.none]: 'taggd_list_none',
-				[Taggd.LIST_TYPES.number]: 'taggd_list_number',
-				[Taggd.LIST_TYPES.letter]: 'taggd_list_letter',
+				[Taggd.LIST_TYPES.none]: ['taggd_list_none'],
+				[Taggd.LIST_TYPES.number]: ['taggd_list_number'],
+				[Taggd.LIST_TYPES.letter]: ['taggd_list_letter'],
+				[Taggd.LIST_TYPES.number_fancy]: ['taggd_list_number', 'taggd_fancy'],
 			};
-			this.listElement.classList.add(listTypes2Style[this.options.listType]);
+			console.log(this.options.listType);
+			listTypes2Style[this.options.listType].forEach((cl) => this.listElement.classList.add(cl));
 			this.listElementWrapper.appendChild(this.listElement);
 		}
 	}
@@ -440,7 +455,7 @@ class Taggd extends EventEmitter
 		if(this.options.list && this.listElement)
 		{
 			const list = [];
-			this.tags.forEach((tag) => list.push('<li>', tag.getText(), '</li>'));
+			this.tags.filter((tag) => tag.status === Tag.STATUS.saved).forEach((tag) => list.push('<li class="', tag.getIndexClass(), '">', tag.getText(), '</li>'));
 			this.listElement.innerHTML = list.join('');
 		}
 		return this;
@@ -482,6 +497,7 @@ Taggd.LIST_TYPES = {
 	none: 0,
 	number: 1,
 	letter: 2,
+	number_fancy: 3,
 };
 
 /**

@@ -22,7 +22,7 @@
   "module": "src/scripts/modern.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/timseverien/taggd.git"
+    "url": "git+https://github.com/GroM/taggdtaggd.git"
   },
   "scripts": {
     "lint": "eslint -c .eslintrc.json src/scripts",
@@ -31,7 +31,8 @@
     "pretest": "npm run lint",
     "test": "karma start karma.conf.js",
     "coveralls": "cat coverage/lcov.info | coveralls",
-    "watch": "gulp watch"
+    "watch": "gulp watch",
+    "preview": "gulp preview"
   },
   "dependencies": {
     "offset": "0.0.1",

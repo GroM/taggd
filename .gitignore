@@ -7,3 +7,5 @@ node_modules/
 
 # Tests results
 coverage/
+
+preview/

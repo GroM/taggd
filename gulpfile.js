@@ -16,6 +16,7 @@ const $ = require('gulp-load-plugins')({
 
 const DIR_BUILD = 'dist';
 const DIR_SOURCE = 'src';
+const DIR_PREVIEW = 'preview';
 
 const OPTIONS_BABEL = {
 	presets: ['@babel/preset-env'],
@@ -35,11 +36,20 @@ const paths = {
 		src: `${DIR_SOURCE}/styles/**/*.css`,
 		dest: DIR_BUILD,
 	},
+	preview: {
+		src: ['dist/**', 'tests/**', 'index.html'],
+		dest: DIR_PREVIEW,
+	},
 };
 
 gulp.task('clean', () =>
 {
 	return del(DIR_BUILD);
+});
+
+gulp.task('clean:preview', () =>
+{
+	return del(DIR_PREVIEW);
 });
 
 gulp.task('build:scripts', () =>
@@ -68,8 +78,15 @@ gulp.task('build:styles', () =>
 		.pipe(gulp.dest(paths.styles.dest));
 });
 
+gulp.task('build:preview', () =>
+{
+	return gulp.src(paths.preview.src, { base: './' })
+		.pipe(gulp.dest(paths.preview.dest));
+});
+
 gulp.task('build', gulp.series('clean', gulp.parallel('build:scripts', 'build:styles')));
 gulp.task('default', gulp.series('build'));
+gulp.task('preview', gulp.series('build', 'clean:preview', 'build:preview'));
 
 gulp.task('watch', gulp.series('build', () =>
 {

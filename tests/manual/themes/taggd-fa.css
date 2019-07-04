@@ -1,14 +1,36 @@
-.taggd__button {
-	display: block;
+
+.taggd_list_number.taggd_fancy li.taggd_current::before, .taggd__button:hover {
+
+}
+
+.taggd_list_number.taggd_fancy {
+	padding-left: 0;
+}
+
+.taggd_list_number.taggd_fancy li::before {
+	counter-increment: taggdList;
+	content: counter(taggdList);
+	border: 0.25rem solid rgba(219, 50, 92, 0.75);
+	line-height: 2rem;
+	margin: 0.5rem;
+
+}
+
+.taggd_list_number.taggd_fancy li::before, .taggd__button {
 	height: 2rem;
 	width: 2rem;
 	border-radius: 50%;
+	display: inline-block;
+	color: rgba(219, 50, 92, 1);
+	text-align: center;
+	font-weight: bold;
+}
+
+.taggd__button {
+	display: block;
+
 	background-color: rgba(255, 255, 255, 0.75);
 	border: 0.25rem solid rgba(219, 50, 92, 0.75);
-	text-align: center;
-	color: rgba(219, 50, 92, 1);
-	font-weight: bold;
-
 
 	-webkit-box-shadow: 0 8px 17px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);
     box-shadow: 0 8px 17px 0 rgba(0,0,0,.2),0 6px 20px 0 rgba(0,0,0,.19);
@@ -33,11 +55,19 @@
 	color: #fff;
 	border-radius: .5rem;
 	text-align: center;
-	white-space: nowrap;
 	background-color: rgba(219, 50, 92, 0.75);
+	white-space: nowrap;
 
 	-webkit-box-shadow: 0 2px 5px 0 rgba(0,0,0,.16),0 2px 10px 0 rgba(0,0,0,.12);
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.16),0 2px 10px 0 rgba(0,0,0,.12);
+}
+
+.taggd__editor .taggd__image {
+	cursor: crosshair;
+}
+
+.taggd__editor .taggd__popup {
+	white-space: normal;
 }
 
 .taggd__popup a, .taggd__popup a:hover {
@@ -52,18 +82,24 @@
 	background-color: transparent;
 	color: #fff;
 	vertical-align: middle;
+	border-radius: 0.2rem;
+}
+
+.taggd__editor-input::placeholder {
+	color: #000;
 }
 
 .taggd__editor-input {
+	margin-bottom: 0.5rem;
 	padding: .25rem .5rem;
 	border: 1px solid #fff;
 }
 
 .taggd__editor-button {
-	border: 0 none;
-	padding: 0;
+	border: 2px solid currentColor;
+	font-size: 1.5em;
 	cursor: pointer;
-
+	margin: 0 0.5rem;
 }
 
 .taggd_list {
@@ -80,4 +116,9 @@
 
 .taggd_list_letter {
 	list-style-type: lower-alpha;
+}
+
+.taggd_list_number.taggd_fancy {
+	counter-reset: taggdList;
+	list-style-type: none;
 }
